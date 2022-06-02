@@ -20,3 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('login',[ApiUserController::class,'login']);
 Route::post('register',[ApiUserController::class,'register']);
+Route::post('upload-image',[ApiUserController::class,'uploadimage']);

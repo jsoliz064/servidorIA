@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\DB;
 use \stdClass;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Reporte;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ApiUserController extends Controller
 {
@@ -57,5 +59,30 @@ class ApiUserController extends Controller
             $myJSON= json_encode($res); 
             return $myJSON;
         }
+    }
+    public function uploadimage(Request $request){
+        /* $url="";
+        if ($request->url!==null){
+        $imagenes=$request->file('url')->store('public/vehiculos');
+        $url=Storage::url($imagenes);
+        Reporte::create([
+            'url' => $url,
+        ]);
+        } */
+        $dir="imagenes/";
+        $image=$request->file('image');
+        if ($request->has('image')){
+            $imageName=\Carbon\Carbon::now()->toDateString() . "-" . uniqid() . "." . "png";
+            if (!Storage::disk('public')->exists($dir)){
+                Storage::disk('public')->makeDirectory($dir);
+            }
+            Storage::disk('public')->put($dir.$imageName,file_get_contents($image));
+        }else{
+            return response()->json(['message'=>trans('storage/imagenes/'.'def.png')],200);
+        }
+        Reporte::create([
+            'url' => $imageName,
+        ]);
+        return response()->json(['message'=>trans('storage/imagenes'.$imageName)],200);
     }
 }
